@@ -44,6 +44,8 @@ router.post("/signup", async (req: Request, res: Response) => {
 
 router.post("/login", async (req: Request, res: Response) => {
   try {
+    const isProd = process.env.NODE_ENV === "production";
+
     const { email, password } = req.body;
 
     if (!email || !password)
@@ -67,8 +69,8 @@ router.post("/login", async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      sameSite: isProd ? "none" :"lax",
+      secure: isProd,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -173,10 +175,12 @@ router.get("/me", authProxy, async (req, res) => {
 
 router.post("/logout", async (_req: Request, res: Response) => {
   try {
+    const isProd = process.env.NODE_ENV === "production";
+
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
     });
 
     return res.status(200).json({
