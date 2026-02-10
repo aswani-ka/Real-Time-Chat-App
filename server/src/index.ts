@@ -27,27 +27,17 @@ const server = http.createServer(app);
 
 /* ================= MIDDLEWARE ================= */
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  process.env.CLIENT_URL, // your vercel url
-].filter((origin): origin is string => Boolean(origin));
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
 
 /* ================= SOCKET ================= */
 
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    credentials: true,
-  },
+  cors: { origin: process.env.CLIENT_URL, credentials: true },
 });
-
 
 
 app.use(express.json());

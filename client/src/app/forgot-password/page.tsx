@@ -6,6 +6,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
 
+/* ================= CONFIG ================= */
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/* ================= COMPONENT ================= */
+
 export default function ForgotPassword() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -18,8 +24,9 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
-        { email }
+        `${API_URL}/api/auth/forgot-password`,
+        { email },
+        { withCredentials: true }
       );
       toast.success("Reset link sent to your email 📧");
       setEmail("");

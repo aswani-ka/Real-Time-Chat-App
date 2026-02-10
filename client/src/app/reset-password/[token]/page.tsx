@@ -6,6 +6,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, Lock, ArrowLeft } from "lucide-react";
 
+/* ================= CONFIG ================= */
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/* ================= COMPONENT ================= */
+
 export default function ResetPassword() {
   const { token } = useParams();
   const router = useRouter();
@@ -28,13 +34,14 @@ export default function ResetPassword() {
     setLoading(true);
     try {
       await axios.post(
-        `http://localhost:5000/api/auth/reset-password/${token}`,
-        { password }
+        `${API_URL}/api/auth/reset-password/${token}`,
+        { password },
+        { withCredentials: true }
       );
       toast.success("Password reset successful 🔐");
       router.push("/login");
-    } catch {
-      toast.error("Reset link expired or invalid");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Reset link expired or invalid");
     } finally {
       setLoading(false);
     }

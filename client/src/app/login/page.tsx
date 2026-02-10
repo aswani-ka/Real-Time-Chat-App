@@ -18,6 +18,12 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /* ================= CONFIG ================= */
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/* ================= COMPONENT ================= */
+
   const router = useRouter();
 
   const submit = async (e: React.FormEvent) => {
@@ -27,7 +33,7 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/api/auth/login`,
         { email, password },
         { withCredentials: true}
       );

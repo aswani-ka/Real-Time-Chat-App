@@ -7,6 +7,12 @@ import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
+/* ================= CONFIG ================= */
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+/* ================= COMPONENT ================= */
+
 export default function Signup() {
   const [form, setForm] = useState({
     name: "",
@@ -32,8 +38,9 @@ export default function Signup() {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        form
+        `${API_URL}/api/auth/signup`,
+        form,
+        { withCredentials: true }
       );
       toast.success("Account created successfully 🎉");
       router.push("/login");
