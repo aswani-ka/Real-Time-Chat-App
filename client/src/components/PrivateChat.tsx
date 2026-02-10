@@ -20,10 +20,6 @@ interface Message {
   createdAt?: string;
 }
 
-/* ================= CONFIG ================= */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 const EMOJIS = ["👍", "❤️", "😂", "😮"];
 
 /* ================= COMPONENT ================= */
@@ -80,16 +76,16 @@ export default function PrivateChat() {
 
   /* ================= SOCKET ================= */
  useEffect(() => {
-  if (!roomId) return;
+  if (!user || !roomId) return;
 
   const init = async () => {
     try {
-    
-      const me = await api.get(`${API_URL}/api/auth/me`, { withCredentials: true });
-      const myName = me.data.user.username;
-      setUser(myName);
+      const SOCKET_URL =
+        process.env.NEXT_PUBLIC_SOCKET_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        "http://localhost:5000";
 
-      const socket = io(API_URL, {
+      const socket = io(SOCKET_URL, {
         withCredentials: true,
         transports: ["polling", "websocket"],
       });
@@ -126,7 +122,7 @@ export default function PrivateChat() {
   return () => {
     socketRef.current?.disconnect();
   };
-}, [roomId, receiver]);
+}, [user,roomId, receiver]);
 
 
   /* ================= HELPERS ================= */

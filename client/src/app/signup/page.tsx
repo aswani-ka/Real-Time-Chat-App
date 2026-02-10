@@ -1,17 +1,11 @@
 "use client";
 
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, MessageSquare } from "lucide-react";
 import Link from "next/link";
-
-/* ================= CONFIG ================= */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-/* ================= COMPONENT ================= */
+import api from "@/lib/axios";
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -37,11 +31,8 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      await axios.post(
-        `${API_URL}/api/auth/signup`,
-        form,
-        { withCredentials: true }
-      );
+      await api.post("/api/auth/signup", form);
+
       toast.success("Account created successfully 🎉");
       router.push("/login");
     } catch (error: any) {

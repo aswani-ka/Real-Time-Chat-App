@@ -1,25 +1,18 @@
-"use client"
+"use client";
 
 import { useEffect, type ReactNode } from "react";
-import ChatListPage from "./ChatListPage";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-
-
-
+import ChatListPage from "./ChatListPage";
+import api from "@/lib/axios";
 
 export default function ChatLayout({ children }: { children: ReactNode }) {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get(
-          "http://localhost:5000/api/auth/me",
-          { withCredentials: true }
-        );
-        
-      } catch (error) {
+        await api.get("/api/auth/me");
+      } catch {
         router.replace("/login");
       }
     };
@@ -32,9 +25,7 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
       <aside className="w-[320px]">
         <ChatListPage />
       </aside>
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

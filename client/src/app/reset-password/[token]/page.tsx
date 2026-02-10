@@ -1,16 +1,11 @@
 "use client";
 
-import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import api from "@/lib/axios";
 import { Eye, EyeOff, Loader2, Lock, ArrowLeft } from "lucide-react";
 
-/* ================= CONFIG ================= */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-/* ================= COMPONENT ================= */
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -33,11 +28,7 @@ export default function ResetPassword() {
 
     setLoading(true);
     try {
-      await axios.post(
-        `${API_URL}/api/auth/reset-password/${token}`,
-        { password },
-        { withCredentials: true }
-      );
+      await api.post(`/api/auth/reset-password/${token}`, { password });
       toast.success("Password reset successful 🔐");
       router.push("/login");
     } catch (error: any) {

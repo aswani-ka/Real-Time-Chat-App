@@ -20,8 +20,6 @@ interface Message {
 
 /* ================= CONFIG ================= */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 const EMOJIS = ["👍", "❤️", "😂", "😮"];
 
 /* ================= COMPONENT ================= */
@@ -99,7 +97,12 @@ export default function GroupChat() {
  useEffect(() => {
   if (!user || !roomId) return;
 
-  const socket = io(API_URL, {
+  const SOCKET_URL =
+    process.env.NEXT_PUBLIC_SOCKET_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:5000";
+
+  const socket = io(SOCKET_URL, {
     withCredentials: true,
     transports: ["polling", "websocket"],
   });

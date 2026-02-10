@@ -1,16 +1,11 @@
 "use client";
 
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Loader2, Mail, ArrowLeft } from "lucide-react";
+import api from "@/lib/axios";
 
-/* ================= CONFIG ================= */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-/* ================= COMPONENT ================= */
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -23,11 +18,8 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      await axios.post(
-        `${API_URL}/api/auth/forgot-password`,
-        { email },
-        { withCredentials: true }
-      );
+      await api.post("/api/auth/forgot-password", { email });
+
       toast.success("Reset link sent to your email 📧");
       setEmail("");
     } catch (err: any) {

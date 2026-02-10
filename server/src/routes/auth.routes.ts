@@ -72,11 +72,12 @@ router.post("/login", async (req: Request, res: Response) => {
       sameSite: isProd ? "none" :"lax",
       secure: isProd,
       maxAge: 24 * 60 * 60 * 1000,
+      path: "/"
     });
 
     return res.status(200).json({
       message: "Login success",
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id.toString(), username: user.name, email: user.email },
     });
   } catch (error) {
     console.error("Login error: ", error);
