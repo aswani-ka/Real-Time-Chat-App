@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💬 Real-Time Chat Application
 
-## Getting Started
+A full-stack real-time chat platform built with modern web technologies, enabling seamless private messaging and group conversations with live updates.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Live Features
+
+* 🔐 JWT Authentication (Cookie-based)
+* 💬 Private 1-to-1 Chat
+* 👥 Group Chat Rooms
+* 🟢 Online / Offline Status
+* ⌨️ Typing Indicators
+* ✏️ Edit Messages
+* 🗑️ Delete Messages
+* 😀 Emoji Reactions
+* 🤖 Chatbot Commands
+* 🔁 Message Delivery Status
+* 📱 Responsive UI
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* Next.js 14 (App Router)
+* TypeScript
+* Tailwind CSS
+* Socket.IO Client
+* Axios
+
+### Backend
+
+* Node.js
+* Express.js
+* TypeScript
+* Socket.IO
+* MongoDB + Mongoose
+* JWT Authentication
+* Nodemailer (Mailtrap)
+
+---
+
+## 📂 Project Structure
+
+```
+real-time-chat-app/
+│
+├── client/          # Next.js Frontend
+│   ├── src/
+│   ├── components/
+│   └── app/
+│
+├── server/          # Express Backend
+│   ├── routes/
+│   ├── models/
+│   ├── socket/
+│   └── config/
+│
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Server (.env)
 
-## Learn More
+```
+PORT=5000
+MONGO_URI=your_mongodb_connection
+JWT_SECRET=your_secret_key
 
-To learn more about Next.js, take a look at the following resources:
+MAILTRAP_SMTP_HOST=
+MAILTRAP_SMTP_PORT=
+MAILTRAP_SMTP_USER=
+MAILTRAP_SMTP_PASS=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Client (.env.local)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🧪 Run Locally
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1️⃣ Clone repo
+
+```
+git clone https://github.com/your-username/real-time-chat-app.git
+cd real-time-chat-app
+```
+
+---
+
+### 2️⃣ Setup Backend
+
+```
+cd server
+npm install
+npm run dev
+```
+
+Runs on:
+
+```
+http://localhost:5000
+```
+
+---
+
+### 3️⃣ Setup Frontend
+
+```
+cd client
+npm install
+npm run dev
+```
+
+Runs on:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 🔌 Socket Events
+
+| Event          | Description             |
+| -------------- | ----------------------- |
+| joinRoom       | Join private/group room |
+| sendMessage    | Send message            |
+| receiveMessage | Receive message         |
+| typing         | Typing indicator        |
+| stopTyping     | Stop typing             |
+| editMessage    | Edit message            |
+| deleteMessage  | Delete message          |
+| reactMessage   | Emoji reactions         |
+
+---
+
+## 🤖 Chatbot Commands
+
+```
+/bot hello
+/bot how are you
+/bot help
+/bot bye
+```
+
+---
+
+## 📸 Screenshots
+
+*Add your UI screenshots here after deployment*
+
+---
+
+## 🌍 Deployment
+
+* Frontend → Vercel
+* Backend → Render
+* Database → MongoDB Atlas
+
+---
+
+## 🔐 Security Features
+
+* HTTP-only cookies
+* JWT authentication
+* Protected routes
+* Auth middleware
+* Token expiry handling
