@@ -73,6 +73,11 @@ export default function PrivateChat() {
     });
 }, [roomId]);
 
+useEffect(() => {
+  if(!roomId) return
+  socketRef.current?.emit("markSeen", {roomId})
+}, [roomId, messages.length])
+
 
   /* ================= SOCKET ================= */
  useEffect(() => {
@@ -95,6 +100,7 @@ export default function PrivateChat() {
       socket.on("connect", () => {
         socket.emit("joinRoom", roomId);
         socket.emit("getUserStatus", receiver);
+        socket.emit("markSeen", { roomId})
       });
 
       socket.on("receiveMessage", (msg: Message) => setMessages((prev) => [...prev, msg]));

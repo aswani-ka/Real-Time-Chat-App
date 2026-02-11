@@ -107,12 +107,12 @@ io.on("connection", (socket) => {
   /* TYPING */
   socket.on("typing", ({ roomId }: { roomId: string }) => {
     if (!roomId) return;
-    socket.to(roomId).emit("userTyping", username); // ✅ string
+    socket.to(roomId).emit("userTyping", username); 
   });
 
   socket.on("stopTyping", (roomId: string) => {
     if (!roomId) return;
-    socket.to(roomId).emit("userStopTyping"); // ✅ ok
+    socket.to(roomId).emit("userStopTyping"); 
   });
 
   /* SEND MESSAGE */
@@ -121,7 +121,7 @@ io.on("connection", (socket) => {
       if (!roomId || !message?.trim()) return;
 
       const msg = await Message.create({
-        senderName: username,     // ✅ must be username string
+        senderName: username,     
         receiverName: "GROUP",
         roomId,
         message,
@@ -148,6 +148,30 @@ io.on("connection", (socket) => {
       }
     } catch (err) {
       console.error("❌ sendMessage error:", err);
+    }
+  });
+
+  /* ✅ MARK SEEN */
+  socket.on("markSeen", async ({ roomId }: { roomId: string }) => {
+    try {
+      if (!roomId) return;
+
+      // find messages not sent by me, not already seen
+      const msgs = await Message.find({
+        roomId,
+        senderName: { $ne: username },
+        status: { $ne: "seen" },
+      }).sort({ createdAt: 1 });
+
+      if (!msgs.length) return;
+
+      for (const msg of msgs) {
+        msg.status = "seen";
+        await msg.save();
+        io.to(roomId).emit("messageUpdated", msg);
+      }
+    } catch (err) {
+      console.error("❌ markSeen error:", err);
     }
   });
 
