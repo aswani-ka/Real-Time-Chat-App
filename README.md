@@ -1,6 +1,16 @@
 # 💬 Real-Time Chat Application
 
-A full-stack real-time chat platform built with modern web technologies, enabling seamless private messaging and group conversations with live updates.
+## 🌐 Live Demo
+
+🔗 Frontend (Vercel):  
+https://real-time-chat-app-six-peach.vercel.app
+
+🔗 Backend API (Render):  
+https://real-time-chat-app-j2w5.onrender.com
+
+## 📌 Overview
+
+A full-stack real-time chat platform built with modern web technologies, supporting private messaging, group chats, typing indicators, reactions, and online presence tracking.
 
 ---
 
@@ -157,7 +167,27 @@ http://localhost:3000
 
 ## 📸 Screenshots
 
-*Add your UI screenshots here after deployment*
+### 🔐 Signup
+![Signup](./screenshots/signup.png)
+
+### 🔑 Login
+![Login](./screenshots/login.png)
+
+### 📃 Chatlist
+![Chatlist](./screenshots/chatlist.png)
+
+### 💬 Private Chat
+![Private Chat](./screenshots/private-chat.png)
+
+### 👥 Group Chat
+![Group Chat](./screenshots/group-chat.png)
+
+### ... Typing Indicator
+![Typing Indicator](./screenshots/typing-indicator.png)
+
+### 😀 Reactions & Edit/Delete
+![Reactions](./screenshots/reactions.png)
+
 
 ---
 
