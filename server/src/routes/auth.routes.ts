@@ -39,16 +39,18 @@ router.post("/signup", async (req: Request, res: Response) => {
     }
 })
 
+
+
+
 router.post("/login", async (req: Request, res: Response) => {
   try {
     const isProd = process.env.NODE_ENV === "production";
 
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ message: "Email and password are required" });
-    }
-    
+
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -67,8 +69,8 @@ router.post("/login", async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd,
       sameSite: isProd ? "none" :"lax",
+      secure: isProd,
       maxAge: 24 * 60 * 60 * 1000,
       path: "/"
     });
@@ -144,6 +146,7 @@ router.post("/reset-password/:token", async (req: Request, res: Response) => {
     }
 });
 
+
 router.get("/users", authProxy, async (req: Request, res: Response) => {
   try {
     const users = await User.find({}, "name email");
@@ -160,27 +163,14 @@ router.get("/users", authProxy, async (req: Request, res: Response) => {
   }
 })
 
-router.get("/me", authProxy, async (req: Request, res: Response) => {
+router.get("/me", authProxy, async (req, res) => {
   try {
-    const userId = (req as any).user?.id;
-
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const user = await User.findById(userId).select("name email");
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
     return res.status(200).json({
-      id: user._id,
-      username: user.name, 
-      email: user.email,
+      user: (req as any).user, 
     });
   } catch (error) {
-    console.error("ME route failed:", error);
-    return res.status(500).json({ message: "Server error" });
+    console.error("Auth check failed:", error);
+    return res.status(401).json({ message: "Unauthorized" });
   }
 });
 
