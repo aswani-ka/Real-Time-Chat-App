@@ -18,10 +18,14 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
+    if(!name?.trim()) {
+      return res.status(400).json({message: "Group name is required"})
+    }
+
     const roomId = `group_${Date.now()}`;
 
     const group = await Group.create({
-      name,
+      name: name.trim(),
       roomId,
     });
 
