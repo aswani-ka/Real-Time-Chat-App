@@ -138,6 +138,7 @@ export default function GroupChat() {
     if (!text.trim()) return;
 
     socketRef.current?.emit("sendMessage", {
+      chatType: "GROUP",
       roomId,
       message: text,
     });
