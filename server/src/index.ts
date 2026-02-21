@@ -21,22 +21,44 @@ import chatbot from "./socket/chatbot";
 import User from "./models/User";
 
 
+
 const app = express();
+app.set("trust proxy", 1)
 const server = http.createServer(app);
 
 
 /* ================= MIDDLEWARE ================= */
 
+const allowedOrigins = [
+  "https://real-time-chat-app-six-peach.vercel.app",
+]
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: (origin, cb) => {
+    
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+
+    console.log("❌ CORS blocked origin:", origin);
+    return cb(new Error("Not allowed by CORS"));
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+app.options("*", cors());
 
 
 /* ================= SOCKET ================= */
 
 const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL, credentials: true },
+  cors: { 
+    origin: allowedOrigins, 
+    credentials: true,
+    methods: ["GET", "POST"] 
+  },
 });
 
 
@@ -116,40 +138,43 @@ io.on("connection", (socket) => {
   });
 
   /* SEND MESSAGE */
-  socket.on("sendMessage", async ({ roomId, message }: { roomId: string; message: string }) => {
-    try {
-      if (!roomId || !message?.trim()) return;
+  socket.on("sendMessage", async ({ chatType, roomId, message, receiverName }) => {
+  if (!roomId || !message?.trim()) return;
 
-      const msg = await Message.create({
-        senderName: username,     
-        receiverName: "GROUP",
-        roomId,
-        message,
-        status: "sent",
-      });
-
-      io.to(roomId).emit("receiveMessage", msg);
-
-      msg.status = "delivered";
-      await msg.save();
-      io.to(roomId).emit("messageUpdated", msg);
-
-      // BOT
-      if (message.startsWith("/bot")) {
-        const reply = await chatbot(message);
-        const botMsg = await Message.create({
-          senderName: "Chatbot",
-          receiverName: username,
-          roomId,
-          message: reply,
-          status: "delivered",
-        });
-        io.to(roomId).emit("receiveMessage", botMsg);
-      }
-    } catch (err) {
-      console.error("❌ sendMessage error:", err);
-    }
+  const msg = await Message.create({
+    senderName: username,
+    receiverName: chatType === "PRIVATE" ? receiverName : "GROUP",
+    roomId,
+    message,
+    status: "sent",
   });
+
+  // Group broadcast to room
+  if (chatType === "GROUP") {
+    io.to(roomId).emit("receiveMessage", msg);
+  }
+
+  // Private: emit only to receiver (and optionally sender)
+  if (chatType === "PRIVATE" && receiverName) {
+    for (const sid of userSockets.get(receiverName) ?? []) {
+      io.to(sid).emit("receiveMessage", msg);
+    }
+
+    socket.emit("receiveMessage", msg);
+  }
+
+  msg.status = "delivered";
+  await msg.save();
+
+  // Notify correct audience about update
+  if (chatType === "GROUP") io.to(roomId).emit("messageUpdated", msg);
+  else {
+    for (const sid of userSockets.get(receiverName) ?? []) {
+      io.to(sid).emit("messageUpdated", msg);
+    }
+    socket.emit("messageUpdated", msg);
+  }
+});
 
   /* ✅ MARK SEEN */
   socket.on("markSeen", async ({ roomId }: { roomId: string }) => {
@@ -207,29 +232,27 @@ io.on("connection", (socket) => {
     }
   });
 
-  /* REACT MESSAGE (store as plain object) */
-  socket.on("reactMessage", async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
-    try {
-      const msg = await Message.findById(messageId);
-      if (!msg) return;
+  socket.on("reactMessage", async ({ messageId, emoji }) => {
+  const msg = await Message.findById(messageId);
+  if (!msg) return;
 
-      const reactions: Record<string, string> =
-        msg.reactions && typeof msg.reactions === "object" && !(msg.reactions instanceof Map)
-          ? (msg.reactions as Record<string, string>)
-          : {};
+  // Normalize to plain object
+  const current =
+    msg.reactions && typeof msg.reactions === "object"
+      ? (msg.reactions instanceof Map
+          ? Object.fromEntries(msg.reactions)
+          : { ...(msg.reactions as any) })
+      : {};
 
-     
-      if (reactions[username] === emoji) delete reactions[username];
-      else reactions[username] = emoji;
+  if (current[username] === emoji) delete current[username];
+  else current[username] = emoji;
 
-      msg.reactions = reactions as any;
-      await msg.save();
+  msg.reactions = current as any;
+  msg.markModified("reactions"); // ✅ ensures save
+  await msg.save();
 
-      io.to(msg.roomId).emit("messageUpdated", msg);
-    } catch (err) {
-      console.error("❌ reactMessage error:", err);
-    }
-  });
+  io.to(msg.roomId).emit("messageUpdated", msg);
+});
 
   /* DISCONNECT */
   socket.on("disconnect", async () => {
