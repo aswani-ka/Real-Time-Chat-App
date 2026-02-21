@@ -85,14 +85,15 @@ export default function PrivateChat() {
 
     const init = async () => {
       try {
-        const SOCKET_URL =
-          process.env.NEXT_PUBLIC_SOCKET_URL ||
-          process.env.NEXT_PUBLIC_API_URL ||
-          "http://localhost:5000";
+        const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+
+        if (!SOCKET_URL) {
+          throw new Error("NEXT_PUBLIC_SOCKET_URL is not defined");
+        }
 
         const socket = io(SOCKET_URL, {
           withCredentials: true,
-          transports: ["polling", "websocket"],
+          transports: ["websocket"],
         });
 
         socketRef.current = socket;
