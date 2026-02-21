@@ -31,6 +31,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://real-time-chat-app-six-peach.vercel.app",
+  "http://localhost:3000",
 ]
 
 app.use(cors({
@@ -47,9 +48,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
-
-app.options("*", cors());
-
 
 /* ================= SOCKET ================= */
 
